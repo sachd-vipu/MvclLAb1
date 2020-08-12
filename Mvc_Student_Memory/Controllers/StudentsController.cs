@@ -83,7 +83,9 @@ namespace Mvc_Student_Memory.Controllers
         // GET: Students/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var student = studentList.Where(s => s.StudentId == id).FirstOrDefault();
+
+            return View(student);
         }
 
         // POST: Students/Edit/5
@@ -106,6 +108,7 @@ namespace Mvc_Student_Memory.Controllers
         // GET: Students/Delete/5
         public ActionResult Delete(int id)
         {
+
             return View();
         }
 
