@@ -31,6 +31,13 @@ namespace Mvc_Student_Memory.Controllers
                 Name = "Parth",
                 DateOfBirth = new DateTime(1998,08,26),
                 Gender = Gender.male
+            },
+                  new Student
+            {
+                StudentId =4,
+                Name = "Jigyasa",
+                DateOfBirth = new DateTime(1998,01,01),
+                Gender = Gender.female
             }
         };
         // GET: Students
@@ -82,22 +89,40 @@ namespace Mvc_Student_Memory.Controllers
 
         // GET: Students/Edit/5
         public ActionResult Edit(int id)
-        {
-            var student = studentList.Where(s => s.StudentId == id).FirstOrDefault();
-
-            return View(student);
+        {   //use any of the technique
+            //var student0 = studentList.Where(s => s.StudentId == id).FirstOrDefault();
+            //var student1 = studentList.FirstOrDefault();
+            //var studendt2 = (from student in studentList where student.StudentId == id select student).FirstOrDefault();
+            var student3 = studentList.Find(s => s.StudentId == id);
+            {
+                if (student3 == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            return View(student3);
+            
         }
 
         // POST: Students/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(int id, Student student)
         {
             try
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    if(id == student.StudentId)
+                    {
+                        var current = studentList.Find(s => s.StudentId == id);
+                        current.Name = student.Name;
+                        current.DateOfBirth = student.DateOfBirth;
+                        current.Gender = student.Gender;
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+                return View();
             }
             catch
             {
@@ -108,24 +133,47 @@ namespace Mvc_Student_Memory.Controllers
         // GET: Students/Delete/5
         public ActionResult Delete(int id)
         {
-
-            return View();
+            var student = studentList.Find(s => s.StudentId == id);
+            if(student == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            return View(student);
         }
 
         // POST: Students/Delete/5
         [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        public ActionResult Delete(int id, Student student1)
         {
             try
             {
                 // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
+                var student = studentList.Find(s => s.StudentId == id);
+                if(student == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                if (studentList.Remove(student))
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                return View();
             }
             catch
             {
                 return View();
             }
+        }
+
+        public ActionResult StudentbyGenre()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult StudentbyGenre(Gender gender)
+        {
+            var students = studentList.FindAll(s => s.Gender == gender);
+            return View(students);
         }
     }
 }
